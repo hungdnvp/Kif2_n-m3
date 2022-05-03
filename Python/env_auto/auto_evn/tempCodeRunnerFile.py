@@ -1,0 +1,7 @@
+driver.get("https://www.tiktok.com/login/phone-or-email/email")
+# time.sleep(5)
+# driver.find_element_by_name('email').send_keys('quanghungorc@gmail.com')
+# driver.find_element_by_name('password').send_keys('MTA@nhockoi2001')
+# time.sleep(5)
+# driver.execute_script('document.querySelector("button.login-button-31D24.highlight-1TvcX").click()')
+# time.sleep(5)

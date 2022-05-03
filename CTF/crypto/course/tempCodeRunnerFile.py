@@ -1,0 +1,1 @@
+  Expands and returns a list of key matrices for the given master_key.

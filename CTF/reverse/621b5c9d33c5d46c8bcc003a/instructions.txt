@@ -1,0 +1,149 @@
+_______________
+The first check the progrm does is a length check
+the following assemly code displays this check:
+
+cmp     [ebp+var_18], 0Ch
+mov     ebx, [ebp+var_28]
+jb      loc_9A22D2
+
+so we can see that our key length needs to be at least 12 characters to pass this check
+________________
+
+now the program flow will try to check if our key is a valid key
+this validity check is divided into two phases:
+
+*First phase:
+
+///////////////////////////
+the assembly code  for the first check phase:
+
+(i will use the symbol "key[x]" to represent the ascii value of our "key" at index "x",indexing starts at 0)
+
+cmp     [ebp+var_14], 10h
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+movsx   edi, byte ptr [eax+6] ;edi = key[6]
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+movsx   esi, byte ptr [eax+7] ;  esi = key[7]
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+movsx   edx, byte ptr [eax+9] ; edx = key[9]
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+movsx   ecx, byte ptr [eax+0Ah] ; ecx = key[10]
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+imul    ecx, esi ; ecx = ecx * esi = key[10] * key[7]
+movsx   eax, byte ptr [eax+0Bh] ; eax = key[11]
+add     eax, edi ; eax = eax + edi = key[11] + key[6]
+imul    eax, edx ; eax = eax * edx = (key[11] + key[6]) * key[9]
+add     eax, ecx ; eax = eax + ecx = (key[11] + key[6]) * key[9] + (key[10] * key[7])
+cmp     eax, 9AF2h ; compares eax with 0x9AF2
+jnz     loc_9A22C5
+
+as we can see in order to pass the first phase of the key validity check
+the following condition needs to be met:
+
+(key[11] + key[6]) * key[9] + (key[10] * key[7]) == 0x9AF2
+
+////////////////////////////
+
+*Second phase:
+
+The assembly code for the second key checking phase:
+
+mov     edx, offset aYouReOnTheRigh ; "You're on the right track"
+call    sub_9A2610
+push    eax
+call    sub_9A28E0
+add     esp, 4
+lea     eax, [ebp+var_28]
+cmp     [ebp+var_14], 10h
+lea     ecx, [ebp+var_28]
+cmovnb  eax, ebx
+movsx   esi, byte ptr [eax]      ;esi = key[0]
+lea     eax, [ebp+var_28]       
+cmovnb  eax, ebx
+movd    xmm0, esi               ;xmm0 = esi = key[0]
+movsx   edi, byte ptr [eax+1]   ; edi = key[1]
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+cvtdq2pd xmm0, xmm0
+movsx   eax, byte ptr [eax+2]   ;eax = key[2]
+movd    xmm5, eax               ;xmm5 = eax = key[2]
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+cvtdq2pd xmm5, xmm5
+movsx   eax, byte ptr [eax+3]   ;eax = key[3]
+cdq
+sub     eax, edx
+sar     eax, 1                  ;eax = eax >> 1 = (key[3] >> 1)
+cmp     [ebp+var_14], 10h
+mulsd   xmm5, ds:qword_9C87D8   ;xmm5 = xmm5 * 0.5 = (key[2] * 0.5 )
+                                ; ds:qword_9C87D8 points to a floating point number equals to 0.5
+                                
+movd    xmm4, eax               ;xmm4 = eax = (key[3] >> 1)
+lea     eax, [ebp+var_28]
+cmovnb  eax, ebx
+cvtdq2pd xmm4, xmm4
+movsx   eax, byte ptr [eax+4]   ;eax = key[4]
+cdq
+sub     eax, edx
+mov     edx, eax                ;edx = eax =  key[4]
+sar     edx, 1                  ;edx = edx >> 1 = (key[4] >> 1)
+cmp     [ebp+var_14], 10h
+cmovnb  ecx, ebx
+movd    xmm3, edx               ;xmm3 = edx = (key[4] >> 1)
+imul    edx, edx                ;edx = edx*edx = (key[4] >> 1) * (key[4] >> 1)
+cvtdq2pd xmm3, xmm3
+movsx   ecx, byte ptr [ecx+5]   ;ecx = key[5]
+mov     eax, ecx                ;eax = ecx = key[5]
+imul    eax, edi                ;eax = eax * edi = key[5] * key[1]
+movd    xmm1, ecx               ;xmm1 = ecx = key[5]
+cvtdq2pd xmm1, xmm1
+sub     eax, edx                ;eax = eax - edx = ((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1)))
+movd    xmm2, eax               ;xmm2 = eax = ((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1)))
+cvtdq2pd xmm2, xmm2
+mulsd   xmm1, xmm5              ;xmm1 = xmm1 * xmm5 =( key[5] * (key[2] * 0.5 ) )
+mulsd   xmm2, xmm0              ;xmm2 = xmm2 * xmm0 = (((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1))) * key[0] )
+movaps  xmm0, xmm3              ;xmm0 = xmm3 = (key[4] >> 1) 
+mulsd   xmm0, xmm4              ;xmm0 = xmm0 * xmm4 =  ( (key[4] >> 1) * (key[3] >> 1) )
+mulsd   xmm3, xmm5              ;xmm3 = xmm3 * xmm5 = ( (key[4] >> 1) * (key[2] * 0.5 ) )
+subsd   xmm1, xmm0              ;xmm1 = xmm1 - xmm0 = ( ( key[5] * (key[2] * 0.5 ) ) - ( (key[4] >> 1) * (key[3] >> 1) ) )
+movd    xmm0, edi               xmm0 = edi = key[1]
+cvtdq2pd xmm0, xmm0
+mulsd   xmm1, xmm5              ;xmm1 = xmm1 * xmm5 = ((( key[5] * (key[2] * 0.5 ) ) - ( (key[4] >> 1) * (key[3] >> 1) )) * (key[2] * 0.5 ))
+mulsd   xmm0, xmm4              ;xmm0 = xmm0 * xmm4 = ( key[1] * (key[3] >> 1) )
+subsd   xmm2, xmm1              ;xmm2 = xmm2 - xmm1 = ( (((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1))) * key[0] ) - ((( key[5] * (key[2] * 0.5 ) ) - ( (key[4] >> 1) * (key[3] >> 1) )) * (key[2] * 0.5 )) )
+subsd   xmm3, xmm0              ;xmm3 = xmm3 - xmm0 = ( ( (key[4] >> 1) * (key[2] * 0.5 ) ) - ( key[1] * (key[3] >> 1) ) )
+mulsd   xmm3, xmm4              ;xmm3 = xmm3 * xmm4 = (( ( (key[4] >> 1) * (key[2] * 0.5 ) ) - ( key[1] * (key[3] >> 1) ) ) * (key[3] >> 1) )
+addsd   xmm2, xmm3              ;xmm2 = xmm2 + xmm3 = ( (((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1))) * key[0] ) - ((( key[5] * (key[2] * 0.5 ) ) - ( (key[4] >> 1) * (key[3] >> 1) )) * (key[2] * 0.5 )) ) + (( ( (key[4] >> 1) * (key[2] * 0.5 ) ) - ( key[1] * (key[3] >> 1) ) ) * (key[3] >> 1) )
+cvtpd2ps xmm0, xmm2             ;xmm0 = xmm2 = ( (((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1))) * key[0] ) - ((( key[5] * (key[2] * 0.5 ) ) - ( (key[4] >> 1) * (key[3] >> 1) )) * (key[2] * 0.5 )) ) + (( ( (key[4] >> 1) * (key[2] * 0.5 ) ) - ( key[1] * (key[3] >> 1) ) ) * (key[3] >> 1) )
+ucomiss xmm0, ds:dword_9C87E0   ;compares the value of xmm0 with the value pointed to by ds:dword_9C87E0 which is equals to 733898.75
+lahf
+test    ah, 44h
+jp      short loc_9A22C5
+
+
+as we can see here in order to pass the second check the following condition needs to be met:
+
+(( (((key[5] * key[1]) - ((key[4] >> 1) * (key[4] >> 1))) * key[0] ) - ((( key[5] * (key[2] * 0.5 ) ) - ( (key[4] >> 1) * (key[3] >> 1) )) * (key[2] * 0.5 )) ) + (( ( (key[4] >> 1) * (key[2] * 0.5 ) ) - ( key[1] * (key[3] >> 1) ) ) * (key[3] >> 1) ))  == 733898.75
+
+////////////////////////////
+
+
+So for a valid key to work the key needs to meet the two conditions (pass the first phase and the second phase)
+
+
+Some useful information :
+
+-the first phase uses only characters at index : 6,7,9,10,11
+-the second phase uses only characters at index : 0,1,2,3,4,5
+-the character at index 8 is not processed so it can has any value
+
+this information will help us when creating a keygen
+A keygen.py is provided along with this write up 
+
+
+
