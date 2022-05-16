@@ -1,0 +1,118 @@
+[Project]
+Assembler=masm
+Type=Win32 App
+Description=HelloWorld
+Backup=$P\Bak\
+Group=1
+GroupExpand=1
+Res.rc=1
+[Files]
+1=HelloWorld.Asm
+2=HelloWorld.Inc
+3=HelloWorld.Rc
+4=HelloWorld.dlg
+[MakeFiles]
+0=HelloWorld.rap
+1=HelloWorld.rc
+2=HelloWorld.asm
+3=HelloWorld.obj
+4=HelloWorld.res
+5=HelloWorld.exe
+6=HelloWorld.def
+7=HelloWorld.dll
+8=HelloWorld.txt
+9=HelloWorld.lib
+10=HelloWorld.mak
+11=HelloWorld.hla
+12=HelloWorld.com
+[MakeDef]
+Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
+1=4,O,$B\RC.EXE /v,1
+2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3,4
+4=0,0,,5
+5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+7=0,0,"$E\OllyDbg",5
+6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
+11=4,O,$B\RC.EXE /v,1
+12=3,O,$B\ML.EXE /c /coff /Cp /Zi /nologo /I"$I",2
+13=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3,4
+14=0,0,,5
+15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
+17=0,0,"$E\OllyDbg",5
+[Resource]
+1=IDB_BITMAP1,105,0,Res\Dora.bmp
+2=IDB_BITMAP2,106,0,Res\Jolie.bmp
+[StringTable]
+[VerInf]
+[Group]
+Group=Added files,Assembly,Resources,Misc,Modules
+1=2
+2=2
+3=3
+4=3
+[Size]
+4=0,0,594,608
+3=0,0,0,0,32
+2=0,4,594,604,490
+1=14,-2,711,744,977
+[Collapse]
+3=
+2=
+1=
+[VersionControl]
+Settings=1246
+Milestones=129
+MilestoneEvery=10
+MilestoneEveryCurrent=0
+MilestoneOnBuild=0.0.0.0
+MilestoneOnTime=2
+MilestoneOnDate=0
+MilestoneOnDateWhen=1
+MilestoneOnDateStatus=0
+MilestoneOnDateDate=19
+MilestoneOnDateTimeYear=2012
+MilestoneOnDateTimeMonth=9
+MilestoneOnDateTimeDate=17
+MilestoneOnDateTimeHour=16
+MilestoneOnDateTimeMin=8
+MilestoneOnDateTimeSec=39
+MilestoneOnDateTimeStatus=0
+BackupLocation=C:\Users\Random\Documents\ASM Projects\VCBackups\
+CompressionLevel=0
+DefaultComment=Project $N, $Z, Backup Created On $D At $T.
+ExcludeExt1=\
+ExcludeExt2=\
+ExcludeExt3=\
+ExcludeExt4=\
+FileVerLength=4
+FileVer2Range=0
+FileVer3Range=0
+FileVer4Range=0
+ProductVerLength=4
+ProductVer2Range=0
+ProductVer3Range=0
+ProductVer4Range=0
+[Colref]
+0=00FFFFFF
+1=00FFFFFF
+2=00FFFFFF
+3=00FFFFFF
+4=00FFFFFF
+5=00FFFFFF
+6=00FFFFFF
+7=00FFFFFF
+[BookMark]
+0=
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+8=
+9=
+[BreakPoint]
+0=

@@ -1,0 +1,6 @@
+#define IDB_BITMAP1						105
+#define IDB_BITMAP2						106
+#define IDI_ICON						107
+IDB_BITMAP1				BITMAP    DISCARDABLE "Res/Dora.bmp"
+IDB_BITMAP2				BITMAP    DISCARDABLE "Res/Jolie.bmp"
+IDI_ICON				ICON      DISCARDABLE "Res/clippy.ico"

@@ -1,0 +1,10 @@
+select mada from phancong where manv in
+(select manv from Nhanvien where hoten like N'Nguyễn'+'%')
+union
+select mada from duan where mapb in
+( select mapb from phongban where matp in
+(select manv from Nhanvien where hoten like N'Nguyễn'+'%'))
+
+nhân viên ko có thân nhân:
+select * from NhanVien where MaNV in
+(select MaNV from NhanVien except  select MaNV from ThanNhan)

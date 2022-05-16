@@ -1,0 +1,2 @@
+#include "Res/HelloWorldRes.rc"
+#include "Res/HelloWorldDlg.rc"
